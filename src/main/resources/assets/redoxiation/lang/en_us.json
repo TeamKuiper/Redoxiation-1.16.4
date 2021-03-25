@@ -1,0 +1,11 @@
+{
+    "_comment": "Redoxiation ItemGroup",
+    "itemGroup.redoxiation_blocks": "Redoxiation Blocks",
+    "itemGroup.redoxiation_items": "Redoxiation Items",
+    
+    "_comment": "Redoxiation Blocks",
+    "block.redoxiation.bauxite": "Bauxite",
+    
+    "_comment": "Redoxiation Items",
+    "item.redoxiation.raw_bauxite": "Raw Bauxite"
+}

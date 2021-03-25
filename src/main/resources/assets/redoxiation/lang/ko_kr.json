@@ -1,0 +1,11 @@
+{
+    "_comment": "리덕시에이션 아이템그룹",
+    "itemGroup.redoxiation_blocks": "리덕시에이션 블록",
+    "itemGroup.redoxiation_items": "리덕시에이션 아이템",
+    
+    "_comment": "리덕시에이션 블록",
+    "block.redoxiation.bauxite": "보크사이트",
+    
+    "_comment": "리덕시에이션 아이템",
+    "item.redoxiation.raw_bauxite": "보크사이트 원석"
+}
