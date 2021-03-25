@@ -26,7 +26,7 @@ public class RedoxiationItemGroups {
 
 		@Override
 		public ItemStack makeIcon() {
-			return RedoxiationItems.RAW_BAUXITE.get().getDefaultInstance();
+			return RedoxiationItems.BASIC_ITEMS.get("raw_bauxite").get().getDefaultInstance();
 		}
 	}
 
