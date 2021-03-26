@@ -15,7 +15,7 @@ public class RedoxiationItemGroups {
 
 		@Override
 		public ItemStack makeIcon() {
-			return RedoxiationBlocks.BAUXITE_BI.get().getDefaultInstance();
+			return RedoxiationBlocks.BASIC_BLOCKS_BI.get("bauxite").get().getDefaultInstance();
 		}
 	}
 
