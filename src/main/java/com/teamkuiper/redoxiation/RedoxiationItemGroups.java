@@ -14,8 +14,8 @@ public class RedoxiationItemGroups {
 		}
 
 		@Override
-		public ItemStack makeIcon() {
-			return RedoxiationBlocks.BASIC_BLOCKS_BI.get("bauxite").get().getDefaultInstance();
+		public ItemStack createIcon() {
+			return RedoxiationBlocks.BLOCKS_BI.get("bauxite").get().getDefaultInstance();
 		}
 	}
 
@@ -25,8 +25,8 @@ public class RedoxiationItemGroups {
 		}
 
 		@Override
-		public ItemStack makeIcon() {
-			return RedoxiationItems.BASIC_ITEMS.get("raw_bauxite").get().getDefaultInstance();
+		public ItemStack createIcon() {
+			return RedoxiationItems.ITEMS.get("raw_bauxite").get().getDefaultInstance();
 		}
 	}
 

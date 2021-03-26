@@ -12,11 +12,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class RedoxiationItems {
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Redoxiation.MODID);
+    public static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Redoxiation.MODID);
     
 
-	public static final Item.Properties ITEM_BASIC_PROPERTISE = new Item.Properties().tab(Redoxiation.ITEM_GROUP);
-	public static final Item.Properties BLOCKITEM_BASIC_PROPERTISE = new Item.Properties().tab(Redoxiation.BLOCK_GROUP);
+	public static final Item.Properties ITEM_BASIC_PROPERTISE = new Item.Properties().group(Redoxiation.ITEM_GROUP);
+	public static final Item.Properties BLOCKITEM_BASIC_PROPERTISE = new Item.Properties().group(Redoxiation.BLOCK_GROUP);
     
 	
 	public static final String[] BASIC_ITEM_NAMES = {
@@ -50,12 +50,12 @@ public class RedoxiationItems {
 	//Fluid buckets
 	public static final String[] BUCKET_NAMES = {"item_hot_air_bucket", "item_molten_pigiron_bucket", "item_slag_bucket"};
 	
-	public static final Map<String, RegistryObject<Item>> BASIC_ITEMS = new HashMap<String, RegistryObject<Item>>();
+	public static final Map<String, RegistryObject<Item>> ITEMS = new HashMap<String, RegistryObject<Item>>();
     
     
     static {
     	for(String name : BASIC_ITEM_NAMES) {
-    		BASIC_ITEMS.put(name, ITEMS.register(name, () -> new Item(ITEM_BASIC_PROPERTISE)));
+    		ITEMS.put(name, ITEM_REGISTER.register(name, () -> new Item(ITEM_BASIC_PROPERTISE)));
     	}
     }
 
