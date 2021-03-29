@@ -1,0 +1,5 @@
+{
+	"loader": "forge:obj",
+	"model": "redoxiation:models/block/objs/wooden_cog.obj",
+	"flip-v": true
+}

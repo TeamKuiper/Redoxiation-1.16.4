@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"use_wavefront_obj_model=true": {
+			"model": "redoxiation:block/wooden_cog" 
+		}
+	}
+}

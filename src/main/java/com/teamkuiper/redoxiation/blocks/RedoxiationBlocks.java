@@ -80,16 +80,16 @@ public class RedoxiationBlocks {
     	while(iter.hasNext()) {
     		String name = iter.next();
     		BLOCKS.put(name, BLOCK_REGISTER.register(name, () -> new Block(BLOCK_DATA.get(name))));
-    		BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItem(BLOCKS.get(name).get(), RedoxiationItems.BLOCKITEM_BASIC_PROPERTISE)));
+    		BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItemCog(name)));
     	}
     	
     	//Registering blocks having tile entities
     	String name;
     	
     	name = "wooden_cog";
-    	BLOCK_DATA.put(name, Block.Properties.create(Material.WOOD));
+    	BLOCK_DATA.put(name, Block.Properties.create(Material.WOOD).notSolid());
     	BLOCKS.put(name, BLOCK_REGISTER.register(name, () -> new BlockCog(name, BLOCK_DATA.get(name))));
-    	BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItem(BLOCKS.get(name).get(), RedoxiationItems.BLOCKITEM_BASIC_PROPERTISE)));
+    	BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItemCog(name)));
     	TILE_ENTITY_TYPES.put(name, TILE_ENTITY_REGISTER.register(name, () -> TileEntityType.Builder.create(() -> new TileCog(name), RedoxiationBlocks.BLOCKS.get(name).get()).build(null)));
     }
     
