@@ -1,5 +1,6 @@
 package com.teamkuiper.redoxiation.blocks;
 
+import com.teamkuiper.redoxiation.blocks.shapes.CogVoxelShape;
 import com.teamkuiper.redoxiation.blocks.tileentities.TileCog;
 
 import codechicken.lib.raytracer.RayTracer;
@@ -27,6 +28,8 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
 public class BlockCog extends Block implements INotifiableWhenBroken {
 
+	public static final String WOODEN_NAME = "wooden_cog";
+	
 	String name;
 	
 	private static final CogVoxelShape SHAPE = new CogVoxelShape();

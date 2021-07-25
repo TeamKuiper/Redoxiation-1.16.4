@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.teamkuiper.redoxiation.RedUtils;
 import com.teamkuiper.redoxiation.Redoxiation;
+import com.teamkuiper.redoxiation.blocks.blockitems.BlockItemCog;
+import com.teamkuiper.redoxiation.blocks.tileentities.TileBlastFurnace;
 import com.teamkuiper.redoxiation.blocks.tileentities.TileCog;
 import com.teamkuiper.redoxiation.items.RedoxiationItems;
 
@@ -80,17 +82,23 @@ public class RedoxiationBlocks {
     	while(iter.hasNext()) {
     		String name = iter.next();
     		BLOCKS.put(name, BLOCK_REGISTER.register(name, () -> new Block(BLOCK_DATA.get(name))));
-    		BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItemCog(name)));
+    		BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItem(BLOCKS.get(name).get(), RedoxiationItems.BLOCKITEM_BASIC_PROPERTISE)));
     	}
     	
     	//Registering blocks having tile entities
-    	String name;
     	
-    	name = "wooden_cog";
-    	BLOCK_DATA.put(name, Block.Properties.create(Material.WOOD).notSolid());
-    	BLOCKS.put(name, BLOCK_REGISTER.register(name, () -> new BlockCog(name, BLOCK_DATA.get(name))));
-    	BLOCKS_BI.put(name, RedoxiationItems.ITEM_REGISTER.register(name, () -> new BlockItemCog(name)));
-    	TILE_ENTITY_TYPES.put(name, TILE_ENTITY_REGISTER.register(name, () -> TileEntityType.Builder.create(() -> new TileCog(name), RedoxiationBlocks.BLOCKS.get(name).get()).build(null)));
+    	final String WOODEN_COG_NAME = BlockCog.WOODEN_NAME;
+    	BLOCK_DATA.put(WOODEN_COG_NAME, Block.Properties.create(Material.WOOD).notSolid());
+    	BLOCKS.put(WOODEN_COG_NAME, BLOCK_REGISTER.register(WOODEN_COG_NAME, () -> new BlockCog(WOODEN_COG_NAME, BLOCK_DATA.get(WOODEN_COG_NAME))));
+    	BLOCKS_BI.put(WOODEN_COG_NAME, RedoxiationItems.ITEM_REGISTER.register(WOODEN_COG_NAME, () -> new BlockItemCog(WOODEN_COG_NAME)));
+    	TILE_ENTITY_TYPES.put(WOODEN_COG_NAME, TILE_ENTITY_REGISTER.register(WOODEN_COG_NAME, () -> TileEntityType.Builder.create(() -> new TileCog(WOODEN_COG_NAME), RedoxiationBlocks.BLOCKS.get(WOODEN_COG_NAME).get()).build(null)));
+    	
+    	final String BLAST_FURNACE_NAME = BlockBlastFurnace.NAME;
+    	BLOCK_DATA.put(BLAST_FURNACE_NAME, Block.Properties.create(Material.ROCK).notSolid());
+    	BLOCKS.put(BLAST_FURNACE_NAME, BLOCK_REGISTER.register(BLAST_FURNACE_NAME, () -> new BlockBlastFurnace(BLOCK_DATA.get(BLAST_FURNACE_NAME))));
+    	BLOCKS_BI.put(BLAST_FURNACE_NAME, RedoxiationItems.ITEM_REGISTER.register(BLAST_FURNACE_NAME, () -> new BlockItem(BLOCKS.get(BLAST_FURNACE_NAME).get(), RedoxiationItems.BLOCKITEM_BASIC_PROPERTISE)));
+    	TILE_ENTITY_TYPES.put(BLAST_FURNACE_NAME, TILE_ENTITY_REGISTER.register(BLAST_FURNACE_NAME, () -> TileEntityType.Builder.create(() -> new TileBlastFurnace(), RedoxiationBlocks.BLOCKS.get(BLAST_FURNACE_NAME).get()).build(null)));
+    	
     }
     
 }

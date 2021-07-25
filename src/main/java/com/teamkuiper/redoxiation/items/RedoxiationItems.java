@@ -57,6 +57,8 @@ public class RedoxiationItems {
     	for(String name : BASIC_ITEM_NAMES) {
     		ITEMS.put(name, ITEM_REGISTER.register(name, () -> new Item(ITEM_BASIC_PROPERTISE)));
     	}
+    	
+    	ITEMS.put(ItemConstructionHammer.NAME, ITEM_REGISTER.register(ItemConstructionHammer.NAME, () -> new ItemConstructionHammer()));
     }
 
 

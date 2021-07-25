@@ -1,4 +1,4 @@
-package com.teamkuiper.redoxiation.blocks;
+package com.teamkuiper.redoxiation.blocks.shapes;
 
 import javax.annotation.Nullable;
 

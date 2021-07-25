@@ -1,5 +1,7 @@
-package com.teamkuiper.redoxiation.blocks;
+package com.teamkuiper.redoxiation.blocks.blockitems;
 
+import com.teamkuiper.redoxiation.blocks.BlockCog;
+import com.teamkuiper.redoxiation.blocks.RedoxiationBlocks;
 import com.teamkuiper.redoxiation.blocks.tileentities.TileCog;
 import com.teamkuiper.redoxiation.items.RedoxiationItems;
 

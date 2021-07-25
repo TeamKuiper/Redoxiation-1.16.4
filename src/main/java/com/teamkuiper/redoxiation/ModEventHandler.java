@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 @Mod.EventBusSubscriber(modid = Redoxiation.MODID, bus = Bus.FORGE)
-public class ForgeEventHandler {
+public class ModEventHandler {
 	
 	@SubscribeEvent
 	public static void onBlockBreak(BlockEvent.BreakEvent e) {

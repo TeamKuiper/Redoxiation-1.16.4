@@ -3,9 +3,6 @@ package com.teamkuiper.redoxiation.blocks.tileentities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import com.teamkuiper.redoxiation.blocks.RedoxiationBlocks;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -14,13 +11,12 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-public class TileCog extends TileEntity implements ITickableTileEntity {
+public class TileCog extends TileBase implements ITickableTileEntity {
 	
     public TileCog(String name) {
-		super(RedoxiationBlocks.TILE_ENTITY_TYPES.get(name).get());
+		super(name);
 	}
     
     public static final float ROTATE_DEGREES = 5.0F;
@@ -273,7 +269,7 @@ public class TileCog extends TileEntity implements ITickableTileEntity {
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		super.write(nbt);
+		nbt = super.write(nbt);
 		byte val = 0;
 		for(int i = 0; i < sideExists.length; i++) {
 			val <<= 1;
@@ -317,7 +313,6 @@ public class TileCog extends TileEntity implements ITickableTileEntity {
 	@Override
 	public void handleUpdateTag(BlockState state, CompoundNBT nbt) {
 		this.read(state, nbt);
-		System.out.println("PACKETA");
 	}
 	
 	//Synchronizing on block update
@@ -330,8 +325,8 @@ public class TileCog extends TileEntity implements ITickableTileEntity {
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		this.read(null, pkt.getNbtCompound());
-		System.out.println("PACKETB");
 	}
+	
 	
 	public static enum PendResult {
 		POSSIBLE, VISITED, IMPOSSIBLE
