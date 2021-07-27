@@ -3,10 +3,13 @@ package com.teamkuiper.redoxiation.blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.teamkuiper.redoxiation.blocks.tileentities.TileMultiblockBase;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
@@ -23,30 +26,36 @@ public class MultiblockData {
 		return true;
 	}
 
-	public boolean isStructured(World world, BlockPos rootPos) {
-		Iterator<Vector3i> iter = structureMap.keySet().iterator();
-		
-		while(iter.hasNext()) {
-			Vector3i key = iter.next();
-			Block value = structureMap.get(key);
-			System.out.println(rootPos.add(key) + ": " + world.getBlockState(rootPos.add(key)).getBlock());
-			
-			if(world.getBlockState(rootPos.add(key)).getBlock() != value) {
-				return false;
+	public BlockPos checkStructure(World world, BlockPos checkPos) {
+		whole:
+		for(Vector3i rootVec : structureMap.keySet()) {
+			for(Vector3i relVec : structureMap.keySet()) {
+				Vector3i checkVec = new Vector3i(relVec.getX()-rootVec.getX(), relVec.getY()-rootVec.getY(), relVec.getZ()-rootVec.getZ());
+				Block block = structureMap.get(relVec);
+				
+				if(world.getBlockState(checkPos.add(checkVec)).getBlock() != block) {
+					continue whole;
+				}
 			}
+			System.out.println("SUCCEEDED");
+			return checkPos.subtract(rootVec);
 		}
-		return true;
+		return null;
 	}
 	
-	public boolean notifyRoot(World world, BlockPos rootPos, TileMultiblockBase root) {
-		Iterator<Vector3i> iter = structureMap.keySet().iterator();
-		
-		while(iter.hasNext()) {
-			Vector3i key = iter.next();
-			
-			TileEntity tile = world.getTileEntity(rootPos.add(key));
-			if(tile instanceof TileMultiblockBase) {
-				((TileMultiblockBase) tile).updateRoot(root);
+	public boolean notifyRoot(World world, BlockPos rootPos, TileMultiblockBase rootTile) {
+		for(Vector3i relVec : structureMap.keySet()) {
+			BlockPos pos = rootPos.add(relVec);
+			TileEntity tile = world.getTileEntity(pos);
+			System.out.println(pos);
+			if(world.getBlockState(pos).getBlock() instanceof BlockMultiblockBase) {
+				world.setBlockState(pos, world.getBlockState(pos)
+						.with(BlockMultiblockBase.IS_MULTIBLOCK, rootTile != null)
+						.with(BlockMultiblockBase.IS_ROOT, relVec.getX() == 0 && relVec.getY() == 0 && relVec.getZ() == 0));
+			}
+			System.out.println(tile == null ? pos : (tile.getPos() + " " + tile.getClass()));
+			if(tile != null && tile instanceof TileMultiblockBase) {
+				((TileMultiblockBase) tile).updateRoot(rootTile);
 			}
 		}
 		return true;

@@ -27,19 +27,24 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 		return rootTile != null;
 	}
 	
-	public boolean isStructured() {
-		return structure.isStructured(world, pos);
+	//returns root blockpos.
+	public BlockPos checkStructure() {
+		return structure.checkStructure(world, pos);
 	}
 	
 	public void updateStructure() {
 		System.out.println("UPDATE STRUCTURE");
 		if(rootTile == null) {
-			if(isStructured()) {
-				structure.notifyRoot(world, pos, this);
+			BlockPos rootPos = checkStructure();
+			if(rootPos != null) {
+				TileEntity rootTile = world.getTileEntity(rootPos);
+				if(rootTile instanceof TileMultiblockBase) {
+					structure.notifyRoot(world, rootPos, (TileMultiblockBase) rootTile);
+				}
 			}
 		} else {
 			if(rootTile.equals(this)) {
-				if(!isStructured()) {
+				if(checkStructure() == null) {
 					rootTile = null;
 					resetStructure();
 				}
@@ -50,6 +55,7 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	}
 	
 	public void resetStructure() {
+		System.out.println("RS: " + rootTile);
 		if(rootTile != null) {
 			if(rootTile.equals(this)) {
 				structure.notifyRoot(world, pos, null);
@@ -65,6 +71,7 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	}
 	
 	public void updateRoot(TileMultiblockBase tile) {
+		System.out.println("UpdateRoot: " + this.pos + " " + (tile == null ? null : tile.pos));
 		rootTile = tile;
 		this.markDirty(); //TODO rootTile is not saved when world is reopened
 	}

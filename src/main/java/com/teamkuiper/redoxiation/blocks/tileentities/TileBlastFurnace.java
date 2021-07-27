@@ -16,7 +16,15 @@ public class TileBlastFurnace extends TileMultiblockBase {
 	
 	static {
 		Block blastFurnace = RedoxiationBlocks.BLOCKS.get(BlockBlastFurnace.NAME).get();
-
+		
+		for(int x = -1; x <= 0; x++) {
+			for(int y = 0; y <= 3; y++) {
+				for(int z = -1; z <= 0; z++) {
+					STRUCT.addBlock(new Vector3i(x, y, z), blastFurnace);
+				}
+			}
+		}
+/*
 		for(int x = -1; x <= 1; x++) {
 			for(int y = -1; y <= 1; y++) {
 				for(int z = 0; z <= 2; z++) {
@@ -27,6 +35,7 @@ public class TileBlastFurnace extends TileMultiblockBase {
 				}
 			}
 		}
+		*/
 	}
 
 	public TileBlastFurnace() {

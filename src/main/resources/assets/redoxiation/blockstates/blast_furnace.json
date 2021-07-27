@@ -1,7 +1,13 @@
 {
 	"variants": {
-		"": {
+		"is_multiblock=false": {
 			"model": "redoxiation:block/blast_furnace" 
+		},
+		"is_multiblock=true,is_root=true": {
+			"model": "redoxiation:block/blast_furnace_multiblock" 
+		},
+		"is_multiblock=true,is_root=false": {
+			"model": "redoxiation:block/blast_furnace_transparent" 
 		}
 	}
 }
