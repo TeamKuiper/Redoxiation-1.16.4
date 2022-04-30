@@ -30,9 +30,9 @@ public class BlockMultiblockBase extends Block {
 	public BlockMultiblockBase(String name, Properties properties) {
 		super(properties);
 		this.name = name;
-		this.setDefaultState(this.stateContainer.getBaseState()
-				.with(IS_MULTIBLOCK, false)
-				.with(IS_ROOT, false));
+		this.registerDefaultState(this.stateDefinition.any()
+				.setValue(IS_MULTIBLOCK, false)
+				.setValue(IS_ROOT, false));
 	}
 
 	@Override
@@ -46,10 +46,10 @@ public class BlockMultiblockBase extends Block {
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit1) {
-		if (!worldIn.isRemote && handIn == Hand.MAIN_HAND) {
-			TileEntity tile = worldIn.getTileEntity(pos);
+		if (!worldIn.isClientSide && handIn == Hand.MAIN_HAND) {
+			TileEntity tile = worldIn.getBlockEntity(pos);
 			if (tile instanceof TileMultiblockBase) {
 				TileMultiblockBase tileMulti = (TileMultiblockBase) tile;
 				if (tileMulti.hasRoot()) {
@@ -57,8 +57,8 @@ public class BlockMultiblockBase extends Block {
 					player.sendMessage(new StringTextComponent("OPEN GUI"), null);
 					return ActionResultType.PASS;
 				} else {
-					player.sendMessage(player.inventory.getCurrentItem().getItem().getName(), null);
-					if (player.inventory.getCurrentItem().getItem() == RedoxiationItems.ITEMS.get(ItemConstructionHammer.NAME)
+					player.sendMessage(player.inventory.getSelected().getDisplayName(), null);
+					if (player.inventory.getSelected().getItem() == RedoxiationItems.ITEMS.get(ItemConstructionHammer.NAME)
 							.get()) {
 						tileMulti.updateStructure();
 					}
@@ -71,11 +71,11 @@ public class BlockMultiblockBase extends Block {
 	}
 
 	@Override
-	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-		super.onBlockHarvested(worldIn, pos, state, player);
+	public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.playerWillDestroy(worldIn, pos, state, player);
 		
-		if (!worldIn.isRemote) {
-			TileEntity tile = worldIn.getTileEntity(pos);
+		if (!worldIn.isClientSide) {
+			TileEntity tile = worldIn.getBlockEntity(pos);
 			System.out.println(tile);
 			if (tile instanceof TileMultiblockBase) {
 				TileMultiblockBase tileMulti = (TileMultiblockBase) tile;
@@ -90,7 +90,7 @@ public class BlockMultiblockBase extends Block {
 	}
 	
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(IS_MULTIBLOCK);
 		builder.add(IS_ROOT);
 	}

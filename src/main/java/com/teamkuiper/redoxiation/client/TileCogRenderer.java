@@ -29,32 +29,32 @@ public class TileCogRenderer extends TileEntityRenderer<TileCog> {
 	@Override
 	public void render(TileCog tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn,
 			int combinedLightIn, int combinedOverlayIn) {
-		matrixStackIn.push();
+		matrixStackIn.pushPose();
 		matrixStackIn.scale(1, 1, 1);
 
-		BlockState state = RedoxiationBlocks.BLOCKS.get("wooden_cog").get().getDefaultState()
-				.with(BlockCog.USE_WAVEFRONT_OBJ_MODEL, true);
-		BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-		IBakedModel model = dispatcher.getModelForState(state);
+		BlockState state = RedoxiationBlocks.BLOCKS.get("wooden_cog").get().defaultBlockState()
+				.setValue(BlockCog.USE_WAVEFRONT_OBJ_MODEL, true);
+		BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
+		IBakedModel model = dispatcher.getBlockModel(state);
 
-		World world = tileEntityIn.getWorld();
+		World world = tileEntityIn.getLevel();
 		if (world == null)
 			return;
 		
-		MatrixStack.Entry currentMatrix = matrixStackIn.getLast();
-		IVertexBuilder vertexBuffer = bufferIn.getBuffer(RenderType.getSolid());
+		MatrixStack.Entry currentMatrix = matrixStackIn.last();
+		IVertexBuilder vertexBuffer = bufferIn.getBuffer(RenderType.solid());
 
 		for (int i = 0; i < tileEntityIn.sideExists.length; i++) {
 			if (tileEntityIn.sideExists[i]) {
-				readyToRender(Direction.byIndex(i), tileEntityIn.rotationInDegrees[i], matrixStackIn);
+				readyToRender(Direction.values()[i], tileEntityIn.rotationInDegrees[i], matrixStackIn);
 				
-				dispatcher.getBlockModelRenderer().renderModel(currentMatrix, vertexBuffer, null, model, 1, 1, 1,
+				dispatcher.getModelRenderer().renderModel(currentMatrix, vertexBuffer, null, model, 1, 1, 1,
 						combinedLightIn, combinedOverlayIn, EmptyModelData.INSTANCE);
 
-				endRender(Direction.byIndex(i), tileEntityIn.rotationInDegrees[i], matrixStackIn);
+				endRender(Direction.values()[i], tileEntityIn.rotationInDegrees[i], matrixStackIn);
 			}
 		}
-		matrixStackIn.pop();
+		matrixStackIn.popPose();
 		
 	}
 	
@@ -63,32 +63,32 @@ public class TileCogRenderer extends TileEntityRenderer<TileCog> {
 		switch(direction) {
 		case UP:
 			matrixStack.translate(0.5, 1, 0.5);
-			matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		case NORTH:
 			matrixStack.translate(0.5, 0.5, 0);
-			matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		case SOUTH:
 			matrixStack.translate(0.5, 0.5, 1);
-			matrixStack.rotate(Vector3f.XN.rotationDegrees(90));
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.XN.rotationDegrees(90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		case WEST:
 			matrixStack.translate(0, 0.5, 0.5);
-			matrixStack.rotate(Vector3f.ZN.rotationDegrees(90));
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZN.rotationDegrees(90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		case EAST:
 			matrixStack.translate(1, 0.5, 0.5);
-			matrixStack.rotate(Vector3f.ZP.rotationDegrees(90));
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		default:
 			matrixStack.translate(0.5, 0, 0.5);
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(rotationInDegrees));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(rotationInDegrees));
 			break;
 		}
 	}
@@ -97,32 +97,32 @@ public class TileCogRenderer extends TileEntityRenderer<TileCog> {
 		//D(0, 0, 0),0 U(1, 1, 0),ZP180 N(0, 1, 0)XP-90 S(0, 0, -1)XP90 W(1, 0, 0),ZP90 E(0, 1, 0),ZP-90
 		switch(direction) {
 		case UP:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
-			matrixStack.rotate(Vector3f.ZP.rotationDegrees(-180));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-180));
 			matrixStack.translate(-0.5, -1, -0.5);
 			break;
 		case NORTH:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
-			matrixStack.rotate(Vector3f.XP.rotationDegrees(-90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90));
 			matrixStack.translate(-0.5, -0.5, 0);
 			break;
 		case SOUTH:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
-			matrixStack.rotate(Vector3f.XN.rotationDegrees(-90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.XN.rotationDegrees(-90));
 			matrixStack.translate(-0.5, -0.5, -1);
 			break;
 		case WEST:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
-			matrixStack.rotate(Vector3f.ZN.rotationDegrees(-90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZN.rotationDegrees(-90));
 			matrixStack.translate(0, -0.5, -0.5);
 			break;
 		case EAST:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
-			matrixStack.rotate(Vector3f.ZP.rotationDegrees(-90));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-90));
 			matrixStack.translate(-1, -0.5, -0.5);
 			break;
 		default:
-			matrixStack.rotate(Vector3f.YN.rotationDegrees(-rotationInDegrees));
+			matrixStack.mulPose(Vector3f.YN.rotationDegrees(-rotationInDegrees));
 			matrixStack.translate(-0.5, 0, -0.5);
 			break;
 		}

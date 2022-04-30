@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.teamkuiper.redoxiation.Redoxiation;
+import com.teamkuiper.redoxiation.RedoxiationItemGroups;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
@@ -15,8 +16,8 @@ public class RedoxiationItems {
     public static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Redoxiation.MODID);
     
 
-	public static final Item.Properties ITEM_BASIC_PROPERTISE = new Item.Properties().group(Redoxiation.ITEM_GROUP);
-	public static final Item.Properties BLOCKITEM_BASIC_PROPERTISE = new Item.Properties().group(Redoxiation.BLOCK_GROUP);
+	public static final Item.Properties ITEM_BASIC_PROPERTISE = new Item.Properties().tab(RedoxiationItemGroups.ITEM_GROUP);
+	public static final Item.Properties BLOCKITEM_BASIC_PROPERTISE = new Item.Properties().tab(RedoxiationItemGroups.BLOCK_GROUP);
     
 	
 	public static final String[] BASIC_ITEM_NAMES = {
@@ -46,9 +47,6 @@ public class RedoxiationItems {
 			//Crashed blocks
 			"crashed_netherrack", "crashed_obsidian"};
 	
-	//TODO
-	//Fluid buckets
-	public static final String[] BUCKET_NAMES = {"item_hot_air_bucket", "item_molten_pigiron_bucket", "item_slag_bucket"};
 	
 	public static final Map<String, RegistryObject<Item>> ITEMS = new HashMap<String, RegistryObject<Item>>();
     

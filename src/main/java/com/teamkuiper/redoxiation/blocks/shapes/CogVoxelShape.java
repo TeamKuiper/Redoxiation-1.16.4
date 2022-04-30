@@ -13,12 +13,12 @@ import net.minecraft.util.math.vector.Vector3d;
 
 public class CogVoxelShape extends MultiIndexedVoxelShape {
 
-	private static final IndexedVoxelShape SHAPE_DOWN = new IndexedVoxelShape(Block.makeCuboidShape(4, 0, 4, 12, 2, 12), 0);
-	private static final IndexedVoxelShape SHAPE_UP = new IndexedVoxelShape(Block.makeCuboidShape(4, 14, 4, 12, 16, 12), 1);
-	private static final IndexedVoxelShape SHAPE_NORTH = new IndexedVoxelShape(Block.makeCuboidShape(4, 4, 0, 12, 12, 2), 2);
-	private static final IndexedVoxelShape SHAPE_SOUTH = new IndexedVoxelShape(Block.makeCuboidShape(4, 4, 14, 12, 12, 16), 3);
-	private static final IndexedVoxelShape SHAPE_WEST = new IndexedVoxelShape(Block.makeCuboidShape(0, 4, 4, 2, 12, 12), 4);
-	private static final IndexedVoxelShape SHAPE_EAST = new IndexedVoxelShape(Block.makeCuboidShape(14, 4, 4, 16, 12, 12), 5);
+	private static final IndexedVoxelShape SHAPE_DOWN = new IndexedVoxelShape(Block.box(4, 0, 4, 12, 2, 12), 0);
+	private static final IndexedVoxelShape SHAPE_UP = new IndexedVoxelShape(Block.box(4, 14, 4, 12, 16, 12), 1);
+	private static final IndexedVoxelShape SHAPE_NORTH = new IndexedVoxelShape(Block.box(4, 4, 0, 12, 12, 2), 2);
+	private static final IndexedVoxelShape SHAPE_SOUTH = new IndexedVoxelShape(Block.box(4, 4, 14, 12, 12, 16), 3);
+	private static final IndexedVoxelShape SHAPE_WEST = new IndexedVoxelShape(Block.box(0, 4, 4, 2, 12, 12), 4);
+	private static final IndexedVoxelShape SHAPE_EAST = new IndexedVoxelShape(Block.box(14, 4, 4, 16, 12, 12), 5);
 	public static final IndexedVoxelShape[] SHAPES = new IndexedVoxelShape[] {SHAPE_DOWN, SHAPE_UP, SHAPE_NORTH, SHAPE_SOUTH, SHAPE_WEST, SHAPE_EAST};
 
     private static final ImmutableSet<IndexedVoxelShape> SHAPE_SET = new ImmutableSet.Builder<IndexedVoxelShape>().add(SHAPES).build();
@@ -35,13 +35,13 @@ public class CogVoxelShape extends MultiIndexedVoxelShape {
 
     @Nullable
     @Override
-    public VoxelShapeRayTraceResult rayTrace(Vector3d start, Vector3d end, BlockPos pos) {
+    public VoxelShapeRayTraceResult clip(Vector3d start, Vector3d end, BlockPos pos) {
         VoxelShapeRayTraceResult closest = null;
         double dist = Double.MAX_VALUE;
         int index = 0;
         for (IndexedVoxelShape shape : SHAPE_SET) {
         	if(sideEnabled != null && sideEnabled.length > index && sideEnabled[index]) {
-	            VoxelShapeRayTraceResult hit = shape.rayTrace(start, end, pos);
+	            VoxelShapeRayTraceResult hit = shape.clip(start, end, pos);
 	            if (hit != null && dist >= hit.dist) {
 	                closest = hit;
 	                dist = hit.dist;

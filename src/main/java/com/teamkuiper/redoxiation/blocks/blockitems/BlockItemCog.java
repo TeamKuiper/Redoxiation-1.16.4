@@ -28,37 +28,37 @@ public class BlockItemCog extends BlockItem {
 	}
 	
 	@Override
-	protected BlockState getStateForPlacement(BlockItemUseContext context) {
-		return RedoxiationBlocks.BLOCKS.get(name).get().getDefaultState().with(BlockCog.FIRST_SIDE, context.getFace().getOpposite());
+	protected BlockState getPlacementState(BlockItemUseContext context) {
+		return RedoxiationBlocks.BLOCKS.get(name).get().defaultBlockState().setValue(BlockCog.FIRST_SIDE, context.getClickedFace().getOpposite());
 	}
 	
 
 	@Override
-	public ActionResultType tryPlace(BlockItemUseContext context) {
-		World world = context.getWorld();
-        BlockPos blockpos = context.getPos();
+	public ActionResultType place(BlockItemUseContext context) {
+		World world = context.getLevel();
+        BlockPos blockpos = context.getClickedPos();
 		BlockState blockState = world.getBlockState(blockpos);
-		TileEntity tile = world.getTileEntity(blockpos);
-		int side = context.getFace().getOpposite().getIndex();
-		if (world.getBlockState(blockpos.offset(Direction.byIndex(side))).isSolid()) {
+		TileEntity tile = world.getBlockEntity(blockpos);
+		int side = context.getClickedFace().getOpposite().get3DDataValue();
+		if (world.getBlockState(blockpos.relative(Direction.values()[side])).canOcclude()) {
 			if (blockState.getBlock() == RedoxiationBlocks.BLOCKS.get(name).get()) {
 				if (tile instanceof TileCog) {
 					TileCog tileCog = (TileCog) tile;
 					PlayerEntity playerentity = context.getPlayer();
-					ItemStack itemstack = context.getItem();
+					ItemStack itemstack = context.getItemInHand();
 					if (tileCog.placeSide(side)) {
-						tileCog.markDirty();
+						tileCog.setChanged();
 
 						SoundType soundtype = blockState.getSoundType(world, blockpos, context.getPlayer());
 						world.playSound(playerentity, blockpos,
 								this.getPlaceSound(blockState, world, blockpos, context.getPlayer()),
 								SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F,
 								soundtype.getPitch() * 0.8F);
-						if (playerentity == null || !playerentity.abilities.isCreativeMode) {
+						if (playerentity == null || !playerentity.isCreative()) {
 							itemstack.shrink(1);
 						}
 
-						return ActionResultType.func_233537_a_(world.isRemote);
+						return ActionResultType.sidedSuccess(world.isClientSide());
 					} else {
 						return ActionResultType.FAIL;
 					}
@@ -68,7 +68,7 @@ public class BlockItemCog extends BlockItem {
 			return ActionResultType.FAIL;
 		}
 
-		return super.tryPlace(context);
+		return super.place(context);
 	}
 
 }

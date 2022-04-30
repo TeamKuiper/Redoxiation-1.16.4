@@ -18,11 +18,11 @@ public class ItemConstructionHammer extends Item {
 	}
 
 	public ActionResultType onItemUse(ItemUseContext context) {
-		World world = context.getWorld();
-		BlockState state = world.getBlockState(context.getPos());
+		World world = context.getLevel();
+		BlockState state = world.getBlockState(context.getClickedPos());
 		Block block = state.getBlock();
 		if(block instanceof IHammerable) {
-			((IHammerable) block).onHammered(state, world, context.getPos(), context.getPlayer(), context.getHand());
+			((IHammerable) block).onHammered(state, world, context.getClickedPos(), context.getPlayer(), context.getHand());
 		}
 		return ActionResultType.PASS;
 	}

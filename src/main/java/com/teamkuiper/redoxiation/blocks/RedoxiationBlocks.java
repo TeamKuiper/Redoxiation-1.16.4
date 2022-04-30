@@ -13,6 +13,7 @@ import com.teamkuiper.redoxiation.items.RedoxiationItems;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
@@ -88,17 +89,18 @@ public class RedoxiationBlocks {
     	//Registering blocks having tile entities
     	
     	final String WOODEN_COG_NAME = BlockCog.WOODEN_NAME;
-    	BLOCK_DATA.put(WOODEN_COG_NAME, Block.Properties.create(Material.WOOD).notSolid());
+    	BLOCK_DATA.put(WOODEN_COG_NAME, Block.Properties.of(Material.WOOD).noOcclusion());
     	BLOCKS.put(WOODEN_COG_NAME, BLOCK_REGISTER.register(WOODEN_COG_NAME, () -> new BlockCog(WOODEN_COG_NAME, BLOCK_DATA.get(WOODEN_COG_NAME))));
     	BLOCKS_BI.put(WOODEN_COG_NAME, RedoxiationItems.ITEM_REGISTER.register(WOODEN_COG_NAME, () -> new BlockItemCog(WOODEN_COG_NAME)));
-    	TILE_ENTITY_TYPES.put(WOODEN_COG_NAME, TILE_ENTITY_REGISTER.register(WOODEN_COG_NAME, () -> TileEntityType.Builder.create(() -> new TileCog(WOODEN_COG_NAME), RedoxiationBlocks.BLOCKS.get(WOODEN_COG_NAME).get()).build(null)));
+    	TILE_ENTITY_TYPES.put(WOODEN_COG_NAME, TILE_ENTITY_REGISTER.register(WOODEN_COG_NAME, () -> TileEntityType.Builder.of(() -> new TileCog(WOODEN_COG_NAME), RedoxiationBlocks.BLOCKS.get(WOODEN_COG_NAME).get()).build(null)));
     	
     	final String BLAST_FURNACE_NAME = BlockBlastFurnace.NAME;
-    	BLOCK_DATA.put(BLAST_FURNACE_NAME, Block.Properties.create(Material.ROCK).notSolid());
+    	BLOCK_DATA.put(BLAST_FURNACE_NAME, Block.Properties.of(Material.STONE).noOcclusion());
     	BLOCKS.put(BLAST_FURNACE_NAME, BLOCK_REGISTER.register(BLAST_FURNACE_NAME, () -> new BlockBlastFurnace(BLOCK_DATA.get(BLAST_FURNACE_NAME))));
     	BLOCKS_BI.put(BLAST_FURNACE_NAME, RedoxiationItems.ITEM_REGISTER.register(BLAST_FURNACE_NAME, () -> new BlockItem(BLOCKS.get(BLAST_FURNACE_NAME).get(), RedoxiationItems.BLOCKITEM_BASIC_PROPERTISE)));
-    	TILE_ENTITY_TYPES.put(BLAST_FURNACE_NAME, TILE_ENTITY_REGISTER.register(BLAST_FURNACE_NAME, () -> TileEntityType.Builder.create(() -> new TileBlastFurnace(), RedoxiationBlocks.BLOCKS.get(BLAST_FURNACE_NAME).get()).build(null)));
+    	TILE_ENTITY_TYPES.put(BLAST_FURNACE_NAME, TILE_ENTITY_REGISTER.register(BLAST_FURNACE_NAME, () -> TileEntityType.Builder.of(() -> new TileBlastFurnace(), RedoxiationBlocks.BLOCKS.get(BLAST_FURNACE_NAME).get()).build(null)));
     	
+    	//Registering fluids
     }
     
 }

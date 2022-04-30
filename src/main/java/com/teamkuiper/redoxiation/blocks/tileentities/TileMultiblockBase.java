@@ -29,7 +29,7 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	
 	//returns root blockpos.
 	public BlockPos checkStructure() {
-		return structure.checkStructure(world, pos);
+		return structure.checkStructure(level, worldPosition);
 	}
 	
 	public void updateStructure() {
@@ -37,9 +37,9 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 		if(rootTile == null) {
 			BlockPos rootPos = checkStructure();
 			if(rootPos != null) {
-				TileEntity rootTile = world.getTileEntity(rootPos);
+				TileEntity rootTile = level.getBlockEntity(rootPos);
 				if(rootTile instanceof TileMultiblockBase) {
-					structure.notifyRoot(world, rootPos, (TileMultiblockBase) rootTile);
+					structure.notifyRoot(level, rootPos, (TileMultiblockBase) rootTile);
 				}
 			}
 		} else {
@@ -58,7 +58,7 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 		System.out.println("RS: " + rootTile);
 		if(rootTile != null) {
 			if(rootTile.equals(this)) {
-				structure.notifyRoot(world, pos, null);
+				structure.notifyRoot(level, worldPosition, null);
 			} else {
 				rootTile.resetStructure();
 			}
@@ -71,19 +71,19 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	}
 	
 	public void updateRoot(TileMultiblockBase tile) {
-		System.out.println("UpdateRoot: " + this.pos + " " + (tile == null ? null : tile.pos));
+		System.out.println("UpdateRoot: " + this.worldPosition + " " + (tile == null ? null : tile.worldPosition));
 		rootTile = tile;
-		this.markDirty(); //TODO rootTile is not saved when world is reopened
+		this.setChanged(); //TODO rootTile is not saved when level is reopened
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT nbt) {
-		nbt = super.write(nbt);
+	public CompoundNBT save(CompoundNBT nbt) {
+		nbt = super.save(nbt);
 		if(rootTile != null) {
-			nbt.putInt("rootTileX", rootTile.pos.getX());
-			nbt.putInt("rootTileY", rootTile.pos.getY());
-			nbt.putInt("rootTileZ", rootTile.pos.getZ());
-			System.out.println("WRITING: " + rootTile.pos);
+			nbt.putInt("rootTileX", rootTile.worldPosition.getX());
+			nbt.putInt("rootTileY", rootTile.worldPosition.getY());
+			nbt.putInt("rootTileZ", rootTile.worldPosition.getZ());
+			System.out.println("WRITING: " + rootTile.worldPosition);
 		}
 		return nbt;
 	}
@@ -91,21 +91,21 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	private BlockPos tmpPos;
 	
 	@Override
-	public void read(BlockState state, CompoundNBT nbt) {
-		super.read(state, nbt);
+	public void load(BlockState state, CompoundNBT nbt) {
+		super.load(state, nbt);
 		if(nbt.contains("rootTileX")) {
 			int rootTileX, rootTileY, rootTileZ;
 			rootTileX = nbt.getInt("rootTileX");
 			rootTileY = nbt.getInt("rootTileY");
 			rootTileZ = nbt.getInt("rootTileZ");
-			tmpPos = new BlockPos(rootTileX, rootTileY, rootTileZ); //world is null at this time
+			tmpPos = new BlockPos(rootTileX, rootTileY, rootTileZ); //level is null at this time
 		}
 	}
 
 	@Override
 	public void tick() {
 		if(tmpPos != null) {
-			TileEntity tile = world.getTileEntity(tmpPos);
+			TileEntity tile = level.getBlockEntity(tmpPos);
 			if(tile instanceof TileMultiblockBase) {
 				rootTile = (TileMultiblockBase) tile;
 			}
@@ -117,24 +117,24 @@ public class TileMultiblockBase extends TileEntity implements ITickable {
 	@Override
 	public CompoundNBT getUpdateTag() {
 		CompoundNBT nbtTag = new CompoundNBT();
-		return this.write(nbtTag);
+		return this.save(nbtTag);
 	}
 
 	@Override
 	public void handleUpdateTag(BlockState state, CompoundNBT nbt) {
-		this.read(state, nbt);
+		this.load(state, nbt);
 	}
 	
 	//Synchronizing on block update
 	@Override
 	public SUpdateTileEntityPacket getUpdatePacket() {
 		CompoundNBT nbtTag = new CompoundNBT();
-		return new SUpdateTileEntityPacket(getPos(), -1, write(nbtTag));
+		return new SUpdateTileEntityPacket(getBlockPos(), -1, save(nbtTag));
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		this.read(null, pkt.getNbtCompound());
+		this.load(null, pkt.getTag());
 	}
 
 }

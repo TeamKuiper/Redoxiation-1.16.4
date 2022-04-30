@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public class MultiblockData {
 
@@ -33,7 +34,7 @@ public class MultiblockData {
 				Vector3i checkVec = new Vector3i(relVec.getX()-rootVec.getX(), relVec.getY()-rootVec.getY(), relVec.getZ()-rootVec.getZ());
 				Block block = structureMap.get(relVec);
 				
-				if(world.getBlockState(checkPos.add(checkVec)).getBlock() != block) {
+				if(world.getBlockState(checkPos.offset(checkVec)).getBlock() != block) {
 					continue whole;
 				}
 			}
@@ -45,15 +46,15 @@ public class MultiblockData {
 	
 	public boolean notifyRoot(World world, BlockPos rootPos, TileMultiblockBase rootTile) {
 		for(Vector3i relVec : structureMap.keySet()) {
-			BlockPos pos = rootPos.add(relVec);
-			TileEntity tile = world.getTileEntity(pos);
+			BlockPos pos = rootPos.offset(relVec);
+			TileEntity tile = world.getBlockEntity(pos);
 			System.out.println(pos);
 			if(world.getBlockState(pos).getBlock() instanceof BlockMultiblockBase) {
-				world.setBlockState(pos, world.getBlockState(pos)
-						.with(BlockMultiblockBase.IS_MULTIBLOCK, rootTile != null)
-						.with(BlockMultiblockBase.IS_ROOT, relVec.getX() == 0 && relVec.getY() == 0 && relVec.getZ() == 0));
+				world.setBlock(pos, world.getBlockState(pos)
+						.setValue(BlockMultiblockBase.IS_MULTIBLOCK, rootTile != null)
+						.setValue(BlockMultiblockBase.IS_ROOT, relVec.getX() == 0 && relVec.getY() == 0 && relVec.getZ() == 0), Constants.BlockFlags.DEFAULT); //what is this flag
 			}
-			System.out.println(tile == null ? pos : (tile.getPos() + " " + tile.getClass()));
+			System.out.println(tile == null ? pos : (tile.getBlockPos() + " " + tile.getClass()));
 			if(tile != null && tile instanceof TileMultiblockBase) {
 				((TileMultiblockBase) tile).updateRoot(rootTile);
 			}

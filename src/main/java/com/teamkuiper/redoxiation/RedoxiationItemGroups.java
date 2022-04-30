@@ -8,13 +8,16 @@ import net.minecraft.item.ItemStack;
 
 public class RedoxiationItemGroups {
 
+	public static final ItemGroup BLOCK_GROUP = new RedoxiationItemGroups.RDBlockGroup();
+	public static final ItemGroup ITEM_GROUP = new RedoxiationItemGroups.RDItemGroup();
+
 	public static class RDBlockGroup extends ItemGroup {
 		public RDBlockGroup() {
 			super("redoxiation_blocks");
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return RedoxiationBlocks.BLOCKS_BI.get("bauxite").get().getDefaultInstance();
 		}
 	}
@@ -25,7 +28,7 @@ public class RedoxiationItemGroups {
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return RedoxiationItems.ITEMS.get("raw_bauxite").get().getDefaultInstance();
 		}
 	}

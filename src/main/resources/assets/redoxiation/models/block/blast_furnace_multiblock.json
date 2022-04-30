@@ -3,6 +3,6 @@
 	"model": "redoxiation:models/block/objs/blast_furnace_multiblock.obj",
 	"flip-v": true,
     "textures": {
-		"BlastFurnaceMaterial": "redoxiation:blocks/blast_furnace_multiblock"
+		"#BlastFurnaceMaterial": "redoxiation:blocks/blast_furnace_multiblock"
     }
 }

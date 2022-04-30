@@ -39,18 +39,18 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	public BlockCog(String name, Properties properties) {
 		super(properties);
 		this.name = name;
-		this.setDefaultState(
-				this.stateContainer.getBaseState()
-				.with(USE_WAVEFRONT_OBJ_MODEL, false)
-				.with(FIRST_SIDE, Direction.DOWN)
+		this.registerDefaultState(
+				this.stateDefinition.any()
+				.setValue(USE_WAVEFRONT_OBJ_MODEL, false)
+				.setValue(FIRST_SIDE, Direction.DOWN)
 				);
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit1) {
-		if(!worldIn.isRemote) {
-			TileEntity tile = worldIn.getTileEntity(pos);
+		if(!worldIn.isClientSide) {
+			TileEntity tile = worldIn.getBlockEntity(pos);
 			if(tile instanceof TileCog) {
 				TileCog tileCog = (TileCog) tile;
 				RayTraceResult hit = RayTracer.retrace(player);
@@ -63,13 +63,13 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 
 	@Override
 	public void onBroken(BreakEvent e) {
-		TileEntity tile = e.getWorld().getTileEntity(e.getPos());
+		TileEntity tile = e.getWorld().getBlockEntity(e.getPos());
 		if(tile instanceof TileCog) {
 			TileCog tileCog = (TileCog) tile;
 			RayTraceResult hit = RayTracer.retrace(e.getPlayer());
 			if(hit.subHit > -1) {
 				tileCog.removeSide(hit.subHit);
-	            spawnDrops(e.getState(), (World) e.getWorld(), e.getPos());
+	            dropResources(e.getState(), (World) e.getWorld(), e.getPos());
 				if(!tileCog.isEmpty()) {
 					e.setCanceled(true);
 				}
@@ -83,14 +83,14 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 			boolean isMoving) {
 		super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
 		BlockPos pos1 = fromPos.subtract(pos);
-		Direction direction = Direction.getFacingFromVector(pos1.getX(), pos1.getY(), pos1.getZ());
-		TileEntity tile = worldIn.getTileEntity(pos);
+		Direction direction = Direction.getNearest(pos1.getX(), pos1.getY(), pos1.getZ());
+		TileEntity tile = worldIn.getBlockEntity(pos);
 		if(tile instanceof TileCog) {
 			TileCog tileCog = (TileCog) tile;
-			if(tileCog.sideExists[direction.getIndex()]) {
-				if(!worldIn.getBlockState(fromPos).isSolid()) {
-					tileCog.removeSide(direction.getIndex());
-		            spawnDrops(state, worldIn, pos);
+			if(tileCog.sideExists[direction.get3DDataValue()]) {
+				if(!worldIn.getBlockState(fromPos).canOcclude()) {
+					tileCog.removeSide(direction.get3DDataValue());
+					dropResources(state, worldIn, pos);
 					//TODO make effects
 				}
 			}
@@ -98,13 +98,13 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	}
 	
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderShape(BlockState state) {
 		return BlockRenderType.INVISIBLE;
 	}
 	
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		TileEntity tile = worldIn.getTileEntity(pos);
+		TileEntity tile = worldIn.getBlockEntity(pos);
 		if(tile instanceof TileCog) {			
 			SHAPE.setSideEnabled(((TileCog) tile).sideExists);
 		}
@@ -114,7 +114,7 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos,
 			ISelectionContext context) {
-		TileCog tileCog = (TileCog) worldIn.getTileEntity(pos);
+		TileCog tileCog = (TileCog) worldIn.getBlockEntity(pos);
 		if(tileCog == null)
 			return VoxelShapes.empty();
 		VoxelShape shape = null;
@@ -132,8 +132,8 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	
 	
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
-		return VoxelShapes.fullCube();
+	public VoxelShape getVisualShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+		return VoxelShapes.block();
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		TileCog tileCog = (TileCog) RedoxiationBlocks.TILE_ENTITY_TYPES.get(name).get().create();
-		tileCog.placeSide(state.get(FIRST_SIDE).getIndex());
+		tileCog.placeSide(state.getValue(FIRST_SIDE).get3DDataValue());
 		return tileCog;
 	}
 
@@ -155,7 +155,7 @@ public class BlockCog extends Block implements INotifiableWhenBroken {
 	
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(USE_WAVEFRONT_OBJ_MODEL);
 		builder.add(FIRST_SIDE);
 	}

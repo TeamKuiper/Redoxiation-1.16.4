@@ -116,16 +116,16 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	}*/
 	
 	public void rotateSide(int side, float rotInDegrees) {
-		System.out.println("Attempting to rotate cog at " + this.pos + "[" + side + "] for " + rotInDegrees + "deg.");
+		System.out.println("Attempting to rotate cog at " + this.worldPosition + "[" + side + "] for " + rotInDegrees + "deg.");
 		if(rotInDegrees == 0)
 			return;
 		if(pendRotate(side, rotInDegrees) != PendResult.IMPOSSIBLE) {
 			List<BlockCogSideInfo> neighbors = investigateNeighbors(side, rotInDegrees);
 			if(neighbors != null) {
 				for(BlockCogSideInfo neighbor : neighbors) {
-					BlockState bs = world.getBlockState(this.pos);
+					BlockState bs = level.getBlockState(this.worldPosition);
 					neighbor.cog.confirmRotation(neighbor.side, true);
-					world.notifyBlockUpdate(neighbor.cog.pos, bs, bs, Constants.BlockFlags.BLOCK_UPDATE);
+					level.sendBlockUpdated(neighbor.cog.worldPosition, bs, bs, Constants.BlockFlags.BLOCK_UPDATE);
 				}
 			}
 		}
@@ -133,17 +133,17 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	
 	private List<BlockCogSideInfo> investigateNeighbors(int side, float rotInDegrees) {
 		List<BlockCogSideInfo> neighbors = new ArrayList<BlockCogSideInfo>();
-		System.out.println("Investigating: " + this.pos + "[" + side + "]");
+		System.out.println("Investigating: " + this.worldPosition + "[" + side + "]");
 		
 		if(sideExists[side]) {
 			BlockPos tmpBlockPos;
 			boolean canRotate = true;
-			Direction direction = Direction.byIndex(side);
-			int opposite = direction.getOpposite().getIndex();
+			Direction direction = Direction.values()[side];
+			int opposite = direction.getOpposite().get3DDataValue();
 			List<BlockCogSideInfo> tmp;
 			visit:
 			for(int i = 0; i < sideExists.length; i++) { //Check all sides without myself and opposite
-				Direction neighborDirection = Direction.byIndex(i);
+				Direction neighborDirection = Direction.values()[i];
 				if(i == side || i == opposite)
 					continue;
 				if(sideExists[i]) { //Check inner cog (90deg)
@@ -164,8 +164,8 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 						break;
 					}
 				} else {
-					tmpBlockPos = this.pos.offset(neighborDirection);
-					TileEntity tile = world.getTileEntity(tmpBlockPos);
+					tmpBlockPos = this.worldPosition.relative(neighborDirection);
+					TileEntity tile = level.getBlockEntity(tmpBlockPos);
 					System.out.println("Pending-Aside: " + tmpBlockPos + "[" + direction + "]");
 					if(tile instanceof TileCog) { //Side by side (180 deg)
 						switch(((TileCog) tile).pendRotate(side, -rotInDegrees)) {
@@ -184,14 +184,14 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 							break;
 						}
 					} else { //Outer cog  (270 deg)
-						tmpBlockPos = this.pos.offset(neighborDirection).offset(direction);
-						TileEntity tile1 = world.getTileEntity(tmpBlockPos);
+						tmpBlockPos = this.worldPosition.relative(neighborDirection).relative(direction);
+						TileEntity tile1 = level.getBlockEntity(tmpBlockPos);
 						System.out.println("Pending-Outer: " + tmpBlockPos + "[" + neighborDirection.getOpposite() + "]");
 	
 						if(tile1 instanceof TileCog) {
-							switch(((TileCog) tile1).pendRotate(neighborDirection.getOpposite().getIndex(), -rotInDegrees)) {
+							switch(((TileCog) tile1).pendRotate(neighborDirection.getOpposite().get3DDataValue(), -rotInDegrees)) {
 							case POSSIBLE:
-								tmp = ((TileCog) tile1).investigateNeighbors(neighborDirection.getOpposite().getIndex(), -rotInDegrees);
+								tmp = ((TileCog) tile1).investigateNeighbors(neighborDirection.getOpposite().get3DDataValue(), -rotInDegrees);
 								if(tmp == null) {
 									canRotate = false;
 									break visit;
@@ -244,13 +244,13 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	}
 	
 	private void confirmRotation(int side, boolean canRotate) {
-		System.out.println("CONFIRMED: " + this.pos + "[" + side + "] " + (canRotate ? "CAN" : "CANNOT") + " be rotated.");
+		System.out.println("CONFIRMED: " + this.worldPosition + "[" + side + "] " + (canRotate ? "CAN" : "CANNOT") + " be rotated.");
 		System.out.println("ROTAION: " + rotationPending[side]);
 		System.out.println("BEFORE: " + rotationInDegrees[side]);
 		if(canRotate) {
 			rotationInDegrees[side] += rotationPending[side];
 			rotationInDegrees[side] %= 180.0;
-			this.markDirty();
+			this.setChanged();
 			
 		}
 		rotationPending[side] = 0;
@@ -268,8 +268,8 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT nbt) {
-		nbt = super.write(nbt);
+	public CompoundNBT save(CompoundNBT nbt) {
+		nbt = super.save(nbt);
 		byte val = 0;
 		for(int i = 0; i < sideExists.length; i++) {
 			val <<= 1;
@@ -285,8 +285,8 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	}
 	
 	@Override
-	public void read(BlockState state, CompoundNBT nbt) {
-		super.read(state, nbt);
+	public void load(BlockState state, CompoundNBT nbt) {
+		super.load(state, nbt);
 		byte val = nbt.getByte("sideExists");
 		for(int i = 0; i < sideExists.length; i++) {
 			sideExists[i] = (val & 0b100000) != 0;
@@ -307,24 +307,24 @@ public class TileCog extends TileBase implements ITickableTileEntity {
 	@Override
 	public CompoundNBT getUpdateTag() {
 		CompoundNBT nbtTag = new CompoundNBT();
-		return this.write(nbtTag);
+		return this.save(nbtTag);
 	}
 
 	@Override
 	public void handleUpdateTag(BlockState state, CompoundNBT nbt) {
-		this.read(state, nbt);
+		this.load(state, nbt);
 	}
 	
 	//Synchronizing on block update
 	@Override
 	public SUpdateTileEntityPacket getUpdatePacket() {
 		CompoundNBT nbtTag = new CompoundNBT();
-		return new SUpdateTileEntityPacket(getPos(), -1, write(nbtTag));
+		return new SUpdateTileEntityPacket(getBlockPos(), -1, save(nbtTag));
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		this.read(null, pkt.getNbtCompound());
+		this.load(null, pkt.getTag());
 	}
 	
 	
